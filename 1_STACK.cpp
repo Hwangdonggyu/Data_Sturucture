@@ -59,7 +59,7 @@ int evalpostfix(char* exp, int len) {
 	initstack(&pstack);
 	for (int i = 0; i < len; i++) {
 		if (isdigit(exp[i])) {
-			push(&pstack, exp[i]-'0'); // -'0' ã�ƺ���
+			push(&pstack, exp[i]-'0'); // -'0' Ã£¾Æº¸±â
 		}
 		else {
 			op2 = peek(&pstack), pop(&pstack);
