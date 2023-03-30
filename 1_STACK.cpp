@@ -10,6 +10,7 @@ typedef struct {
 
 }stack;
 
+
 void initstack(stack* pstack);
 bool isfull(stack* pstack);
 bool isempty(stack* pstack);
@@ -17,6 +18,7 @@ data peek(stack* pstack);
 void push(stack* pstack, data item);
 void pop(stack* pstack);
 int comp(char op1, char op2);
+int getcomp(char op1);
 
 void reverseprint(char* s, int n) {
 	stack pstack;
@@ -59,7 +61,7 @@ int evalpostfix(char* exp, int len) {
 	initstack(&pstack);
 	for (int i = 0; i < len; i++) {
 		if (isdigit(exp[i])) {
-			push(&pstack, exp[i]-'0'); // -'0' Ã£¾Æº¸±â
+			push(&pstack, exp[i]-'0'); // 문자열에서 숫자로 바꿔주는 기능 -'0'
 		}
 		else {
 			op2 = peek(&pstack), pop(&pstack);
@@ -91,7 +93,11 @@ void convinfixtopostfix(char* exp, char* conv, int len) {
 			conv[idx++] = exp[i];
 		}
 		else {
-			
+			while (!isempty(&pstack) && comp(peek(&pstack), exp[i])) {
+				conv[idx++] = peek(&pstack);
+				pop(&pstack);
+			}
+			push(&pstack, exp[i]);
 		}
 	}
 	
@@ -101,9 +107,6 @@ int main() {
 	char s[10];
 	scanf("%s", s);
 	reverseprint(s,4);
-	
-
-
 }
 
 void initstack(stack* pstack) {
@@ -135,5 +138,19 @@ void pop(stack* pstack) {
 }
 
 int comp(char op1, char op2) {
+	if (getcomp(op1) >= getcomp(op2)) return true;
+	else if (getcomp(op2) > getcomp(op1)) return false;
 
+
+}
+
+int getcomp(char op1) {
+	switch (op1) {
+	case '(' :
+	case ')': return 5;
+	case '*':
+	case '/': return 4;
+	case '+':
+	case '-': return 3;
+	}
 }
