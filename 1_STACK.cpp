@@ -104,9 +104,15 @@ void convinfixtopostfix(char* exp, char* conv, int len) {
 }
 
 int main() {
-	char s[10];
-	scanf("%s", s);
-	reverseprint(s,4);
+	char a[100] = { "(4+3)*3" };
+	char b[100];
+	convinfixtopostfix(a, b, 8);
+	for (int i = 0; i < 7; i++) {
+		if (b[i] == '(' || b[i] == ')') {
+			continue;
+		}
+		printf("%c", b[i]);
+	}
 }
 
 void initstack(stack* pstack) {
@@ -146,7 +152,7 @@ int comp(char op1, char op2) {
 
 int getcomp(char op1) {
 	switch (op1) {
-	case '(' :
+	case '(': return 1;
 	case ')': return 5;
 	case '*':
 	case '/': return 4;
