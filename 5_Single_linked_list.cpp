@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +22,8 @@ void printlist(linkedlist* plist);
 void clearlist(linkedlist* plist);
 void insertfirst(linkedlist* plist, data item);
 void removefirst(linkedlist* plist);
+linkedlist* concatenate(linkedlist* plist1, linkedlist* plist2);
+void reverse(linkedlist* plist);
 
 int main() {
 	linkedlist list;
@@ -107,4 +110,31 @@ void removefirst(linkedlist* plist) {
 	plist->head->next = temp->next;
 	free(temp);
 	plist->len--;
+}
+
+linkedlist* concatenate(linkedlist* plist1, linkedlist* plist2) {
+	if (plist1->head->next == NULL) return plist2;
+	else if (plist2->head->next == NULL) return plist1;
+	else {
+		node* cur = plist1->head->next;
+		while (cur->next != NULL) {
+			cur = cur->next;
+		}
+		cur->next = plist2->head->next;
+		free(plist2->head);
+		return plist1;
+	}
+}
+
+void reverse(linkedlist* plist) {
+	node* cur= NULL;
+	node* pre = NULL;
+	node* next = plist->head->next;
+	while (next != NULL) {
+		pre = cur;
+		cur = next;
+		next = next->next;
+		cur->next = pre;
+	}
+	plist->head->next = cur;
 }
