@@ -23,9 +23,9 @@ int peekrear(dequeue* pdequeue);
 bool checkpalindrome(char* str, int len);
 
 int main() {
-	int n;
-	scanf("%d", &n);
-	char* check = (char*)malloc(sizeof(char) * n);
+	int len;
+	scanf("%d", &len);
+	char* check = (char*)malloc(sizeof(char) * (len+1));
 	scanf("%s", check);
 	if (checkpalindrome(check, strlen(check))) {
 		printf("true");
