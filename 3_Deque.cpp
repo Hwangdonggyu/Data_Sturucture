@@ -25,7 +25,7 @@ bool checkpalindrome(char* str, int len);
 int main() {
 	int len;
 	scanf("%d", &len);
-	char* check = (char*)malloc(sizeof(char) * (len+1));
+	char* check = (char*)malloc(sizeof(char) * (len + 1));
 	scanf("%s", check);
 	if (checkpalindrome(check, strlen(check))) {
 		printf("true");
@@ -34,7 +34,6 @@ int main() {
 		printf("false");
 	}
 	free(check);
-
 }
 void initdequeue(dequeue* pdequeue) {
 	pdequeue->front = pdequeue->rear = 0;
@@ -49,8 +48,8 @@ void addfront(dequeue* pdequeue, data item) {
 	if (isfull(pdequeue)) {
 		exit(1);
 	}
+	pdequeue->front = (pdequeue->front - 1 + max_dequeue) % max_dequeue;
 	pdequeue->items[pdequeue->front] = item;
-	pdequeue->front = (pdequeue->front - 1+max_dequeue) % max_dequeue;
 }
 void addrear(dequeue* pdequeue, data item) {
 	if (isfull(pdequeue)) {
