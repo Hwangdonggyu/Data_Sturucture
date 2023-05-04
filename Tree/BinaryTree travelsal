@@ -1,0 +1,143 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef int data;
+typedef struct _bt {
+    data item;
+    struct _bt* left_child;
+    struct _bt* right_child;
+}bt;
+
+/*queue*/
+typedef struct _node {
+    bt* node;
+    struct _node* next;
+}node;
+
+typedef struct {
+    node* front,*rear;
+}d_queue;
+
+
+bt* createnode(data item);
+void destroynode(bt* node);
+void createleftsubtree(bt* root, bt* left) {
+    if (root->left_child != NULL) exit(1);
+    root->left_child = left;
+}
+void createrightsubtree(bt* root, bt* right) {
+    if (root->right_child != NULL) exit(1);
+    root->right_child = right;
+}
+void inorder(bt* root);
+void preorder(bt* root);
+void postorder(bt* root);
+void levelorder(bt* root);
+
+/*queue*/
+void initqueue(d_queue* pqueue) {
+    pqueue->front = NULL;
+    pqueue->rear = NULL;
+}
+bool isempty(d_queue* pqueue) {
+    return pqueue->front== NULL;
+}
+bt* peek(d_queue* pqueue) {
+    if (isempty(pqueue)) exit(1);
+    return pqueue->front->node;
+}
+void enqueue(d_queue* pqueue, bt* root) {
+    node* newnode;
+    newnode = (node*)malloc(sizeof(node));
+    newnode->node = root;
+    if (isempty(pqueue)) {
+        pqueue->front = pqueue->rear = newnode;
+    }
+    else {
+        pqueue->rear->next = newnode;
+        pqueue->rear = newnode;
+    }
+}
+void dequeue(d_queue* pqueue) {
+    node* temp;
+    if (isempty(pqueue)) exit(1);
+    temp = pqueue->front;
+    if(temp->next == NULL){
+        pqueue->front = pqueue->rear = NULL;
+    }
+    else {
+        pqueue->front = temp->next;
+    }
+    free(temp);
+    
+}
+
+int main() {
+    bt* n1 = createnode(1);
+    bt* n2 = createnode(2);
+    bt* n3 = createnode(3);
+    bt* n4 = createnode(4);
+    bt* n5 = createnode(5);
+    bt* n6 = createnode(6);
+    createleftsubtree(n1, n2);
+    createrightsubtree(n1, n3);
+    createleftsubtree(n2, n4);
+    createrightsubtree(n2, n5);
+    createleftsubtree(n3, n6);
+    levelorder(n1);
+    
+
+}
+
+bt* createnode(data item) {
+    bt* newnode = (bt*)malloc(sizeof(bt));
+    newnode->item = item;
+    newnode->left_child = NULL;
+    newnode->right_child = NULL;
+    return newnode;
+}
+void destroynode(bt* node) {
+    free(node);
+}
+
+void inorder(bt* root){
+    if(root != NULL){
+        inorder(root->left_child);
+        printf("%d ", root->item);
+        inorder(root->right_child);
+    }
+}
+void preorder(bt* root){
+    if(root != NULL){
+        printf("%d ",root->item);
+        preorder(root->left_child);
+        preorder(root->right_child);
+    }
+}
+void postorder(bt* root){
+ if(root != NULL){
+        postorder(root->left_child);
+        postorder(root->right_child);
+        printf("%d ",root->item);
+    }
+}
+
+void levelorder(bt* root){
+    d_queue pqueue;
+    if(root == NULL) return;
+    initqueue(&pqueue);
+    enqueue(&pqueue,root);
+    while(!isempty(&pqueue)){
+        root = peek(&pqueue);
+        dequeue(&pqueue);
+        printf("%d ",root->item);
+        if(root->left_child != NULL){
+            enqueue(&pqueue,root->left_child);
+        }
+        if(root->right_child != NULL){
+            enqueue(&pqueue,root->right_child);
+        }
+    }
+
+}
+
