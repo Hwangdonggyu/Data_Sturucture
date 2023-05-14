@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define max_heap 100
+typedef char Data;
+typedef struct{
+    Data data;
+    int priority;
+}hnode;
+typedef struct{
+    hnode items[max_heap+1];
+    int num;
+} heap;
+
+void initheap(heap* pheap);
+bool isempty(heap* pheap);
+bool isfull(heap* pheap);
+void insert(heap* pheap, Data data, int priority);
+Data Delete(heap* pheap);
+int getparent(int idx);
+int getlchild(int idx);
+int getrchild(int idx);
+int gethighprioritychild(heap* pheap, int idx);
+
+int main(){
+    heap test;
+    initheap(&test);
+    insert(&test,'a',5);
+    insert(&test,'b',4);
+    insert(&test,'c',3);
+    insert(&test,'d',2);
+    insert(&test,'e',1);
+    Delete(&test);
+    printf("%c ",test.items[test.num].data);
+}
+
+void initheap(heap* pheap){
+    pheap->num = 0;
+}
+bool isempty(heap* pheap){
+    return pheap->num == 0;
+}
+bool isfull(heap* pheap){
+    return pheap->num == max_heap;
+}
+int getparent(int idx){
+    return idx/2;
+}
+int getlchild(int idx){
+    return idx*2;
+}
+int getrchild(int idx){
+    return idx*2+1;
+}
+int gethighprioritychild(heap* pheap, int idx){
+    int left = getlchild(idx);
+    int right = getrchild(idx);
+    if(left> pheap->num) return 0;
+    else if(left == pheap->num) return left;
+    else{
+        if(pheap->items[left].priority > pheap->items[right].priority){
+            return left;
+        }
+        else{
+            return right;
+        }
+    }
+    
+}
+void insert(heap* pheap, Data data, int priority){
+    hnode newnode;
+    int idx = pheap->num + 1;
+    if(isfull(pheap)) exit(1);
+    newnode.data = data;
+    newnode.priority = priority;
+    pheap->items[idx] = newnode;
+    while(idx>1){
+        int parent = getparent(idx);
+        if(priority > pheap->items[parent].priority){
+            pheap->items[idx] = pheap->items[parent];
+            idx = parent;
+        }
+        else break;
+    }
+    pheap->num++;
+}
+Data Delete(heap* pheap){
+    Data max = pheap->items[1].data;
+    hnode last = pheap->items[pheap->num];
+    int parent = 1, child;
+    while(child = gethighprioritychild(pheap, parent)){
+        if(last.priority < pheap->items[child].priority){
+            pheap->items[parent] = pheap->items[child];
+            parent = child;
+        }
+        else break;
+    }
+    pheap->items[parent] = last;
+    pheap->num--;
+    return max;
+}
+
+
