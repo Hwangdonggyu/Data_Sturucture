@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int data;
+typedef struct _btnode{
+    data item;
+    struct _btnode* left_child;
+    struct _btnode* right_child;
+    bool istheaded;
+}btnode;
+
+btnode* createnode(data item);
+btnode* createtree(btnode* root);
+btnode* leftmost(btnode* node);
+void inorder(btnode* node);
+
+int main(){
+    btnode* root = createnode(1);
+//    root->left_child = createnode(2);
+//    root->right_child = createnode(3);
+//    root->left_child->left_child = createnode(4);
+//    root->left_child->right_child = createnode(5);
+    root->left_child = createnode(2);
+    root->right_child = createnode(3);
+    root->left_child->right_child = createnode(5);
+    createtree(root);
+    inorder(root);
+}
+
+btnode* createnode(data item){
+    btnode* newnode = (btnode*)malloc(sizeof(btnode));
+    newnode->item = item;
+    newnode->left_child = NULL;
+    newnode->right_child = NULL;
+    newnode->istheaded = false;
+    return newnode;
+}
+
+btnode* createtree(btnode* root){
+    if(root==NULL) return NULL;
+    if(root->left_child != NULL){
+        btnode* left = createtree(root->left_child);
+        left->right_child = root;
+        left->istheaded = true;
+    }
+    if(root->right_child == NULL) return root;
+    return createtree(root->right_child);
+}
+
+btnode* leftmost(btnode* node){
+    if(node == NULL) return NULL;
+    while(node->left_child != NULL){
+        node = node->left_child;
+    }
+    return node;
+}
+void inorder(btnode* node){
+    btnode* cur = leftmost(node);
+    while(cur != NULL){
+        printf("%d ", cur->item);
+        if(cur->istheaded) cur = cur->right_child;
+        else {
+            cur = leftmost(cur->right_child);
+        }
+    }
+}
