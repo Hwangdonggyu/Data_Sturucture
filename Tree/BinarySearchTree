@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int data;
+typedef struct _bstnode{
+    data key;
+    struct _bstnode* left_child;
+    struct _bstnode* right_child;
+} bstnode;
+
+bstnode* createnode(data key);
+void destroynode(bstnode* node);
+void createleftsubtree(bstnode* root, data key);
+void createrightsubtree(bstnode* root, data key);
+bool verify(bstnode* root);
+bstnode* search(bstnode* root, data key);
+void insert(bstnode* root,data key);
+bstnode* Remove(bstnode* root,data key);
+void inorder(bstnode* root);
+
+int main(){
+    bstnode* root = createnode(20);
+    insert(root, 10);
+    insert(root, 30);
+    insert(root, 40);
+    Remove(root,30);
+    insert(root, 5);
+    bstnode* cur = search(root,10);
+    printf("%d\n",cur->key);
+    if(verify(root)){
+        inorder(root);
+    }
+    else{
+        printf("err");
+    }
+}
+
+bstnode* createnode(data key){
+    bstnode* root = (bstnode*)malloc(sizeof(bstnode));
+    root->key = key;
+    root->left_child = NULL;
+    root->right_child = NULL;
+    return root;
+}
+void destroynode(bstnode* node){
+    free(node);
+}
+void createleftsubtree(bstnode* root, data key) {
+    if (root->left_child != NULL) exit(1);
+    root->left_child = createnode(key);
+}
+void createrightsubtree(bstnode* root, data key) {
+    if (root->right_child != NULL) exit(1);
+    root->right_child = createnode(key);
+}
+bool verify(bstnode* root){
+    if (root == NULL) {
+        return true;
+    }
+    if (root->left_child != NULL && root->key <= root->left_child->key) {
+        return false;
+    }
+    if (root->right_child != NULL && root->key >= root->right_child->key) {
+        return false;
+    }
+    return verify(root->left_child) && verify(root->right_child);
+}
+bstnode* search(bstnode* root, data key){
+    if(root == NULL || root->key == key) return root;
+    else if (root->key > key) return search(root->left_child, key);
+    else return search(root->right_child, key);
+}
+void insert(bstnode* root,data key){
+    if(root->key == key) exit(1);
+    else if (root->key > key){
+        if(root->left_child == NULL){
+            createleftsubtree(root, key);
+        }
+        else{
+            insert(root->left_child,key);
+        }
+    }
+    else{
+        if(root->right_child == NULL){
+            createrightsubtree(root, key);
+        }
+        else{
+            insert(root->right_child, key);
+        }
+    }
+}
+bstnode* Remove(bstnode* root,data key){
+    if(root==NULL) return NULL;
+    if(root->key > key) root->left_child = Remove(root->left_child,key); // Find the element
+    else if (root->key < key) root->right_child = Remove(root->right_child,key);
+    else{
+        bstnode* cur = root;
+        if(root->left_child == NULL && root->right_child == NULL){
+            destroynode(cur);
+            root = NULL;
+        }
+        else if (root->left_child == NULL || root->right_child == NULL){
+            if(root->left_child != NULL){
+                root = root->left_child;
+                destroynode(cur);
+            }
+            else{
+                root = root->right_child;
+                destroynode(cur);
+            }
+        }
+        else{
+            cur = cur->right_child;
+            while(cur->left_child != NULL){
+                cur = cur->left_child;
+            }
+            root->key = cur->key;
+            root->right_child = Remove(root->right_child, cur->key);
+        }
+    }
+    return root;
+}
+void inorder(bstnode* root){
+    if(root != NULL){
+        inorder(root->left_child);
+        printf("%d ", root->key);
+        inorder(root->right_child);
+    }
+}
