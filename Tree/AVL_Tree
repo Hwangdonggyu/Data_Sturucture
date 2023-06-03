@@ -1,0 +1,191 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct _bstnode{
+    int key;
+    struct _bstnode* left_child;
+    struct _bstnode* right_child;
+}bstnode;
+
+bstnode* createnode(int key);
+void destroynode(bstnode* node);
+void createleftsubtree(bstnode* root, int key);
+void createrightsubtree(bstnode* root, int key);
+bstnode* rebalance(bstnode* root);
+int max(int l, int r);
+int getheight(bstnode* root);
+int getbalancefactor(bstnode* root);
+void inorder(bstnode* root);
+bstnode* insert(bstnode* root, int key);
+bstnode* Remove(bstnode* root,int key);
+bstnode* LLrotation(bstnode* root);
+bstnode* LRrotation(bstnode* root);
+bstnode* RRrotation(bstnode* root);
+bstnode* RLrotation(bstnode* root);
+void inorder(bstnode* root);
+
+int main(){
+    bstnode* root = NULL;
+
+       // AVL 트리에 값 삽입
+       root = insert(root, 10);
+       root = insert(root, 20);
+       root = insert(root, 30);
+       root = insert(root, 40);
+       root = insert(root, 50);
+       root = insert(root, 25);
+    // AVL 트리 순회 (중위 순회)
+    printf("Inorder traversal: ");
+    inorder(root);
+    printf("\n");
+
+    // AVL 트리에서 값 제거
+    root = Remove(root, 30);
+
+    // AVL 트리 순회 (중위 순회)
+    printf("Inorder traversal after removal: ");
+    inorder(root);
+    printf("\n");
+
+    return 0;
+}
+
+bstnode* createnode(int key){
+    bstnode* root = (bstnode*)malloc(sizeof(bstnode));
+    root->key = key;
+    root->left_child = NULL;
+    root->right_child = NULL;
+    return root;
+}
+void destroynode(bstnode* node){
+    free(node);
+}
+void createleftsubtree(bstnode* root, int key) {
+    if (root->left_child != NULL) exit(1);
+    root->left_child = createnode(key);
+}
+void createrightsubtree(bstnode* root, int key) {
+    if (root->right_child != NULL) exit(1);
+    root->right_child = createnode(key);
+}
+int max(int l, int r){
+    if(l>=r) return l;
+    else return r;
+}
+
+int getheight(bstnode* root){
+    if(root == NULL) return 0;
+    int left_height = getheight(root->left_child);
+    int right_height = getheight(root->right_child);
+    return 1 + max(left_height, right_height);
+}
+
+int getbalancefactor(bstnode* root){
+    if(root == NULL) return 0;
+    return getheight(root->right_child) - getheight(root->left_child);
+}
+
+bstnode* LLrotation(bstnode* root){
+    bstnode* child = root->left_child;
+    root->left_child = child->right_child;
+    child->right_child = root;
+    return child;
+}
+
+bstnode* RRrotation(bstnode* root){
+    bstnode* child = root->right_child;
+    root->right_child = child->left_child;
+    child->left_child = root;
+    return child;
+}
+
+bstnode* LRrotation(bstnode* root){
+    bstnode* child = root->left_child;
+    root->left_child = RRrotation(child);
+    return LLrotation(root);
+}
+
+bstnode* RLrotation(bstnode* root){
+    bstnode* child = root->right_child;
+    root->right_child = LLrotation(child);
+    return RRrotation(root);
+}
+
+bstnode* rebalance(bstnode* root){
+    int factor = getbalancefactor(root);
+    if (factor < -1){
+        if(getbalancefactor(root->left_child) < 0){
+            root = LLrotation(root);
+        }
+        else{
+            root = LRrotation(root);
+        }
+    }
+    else if (factor>1){
+        if(getbalancefactor(root->right_child) > 0){
+            root = RRrotation(root);
+        }
+        else{
+            root = RLrotation(root);
+        }
+    }
+    return root;
+}
+
+bstnode* insert(bstnode* root, int key){
+    if(root == NULL)
+        return createnode(key);
+    if(root->key > key){
+        root->left_child = insert(root->left_child, key);
+        root = rebalance(root);
+        return root;
+    }
+    if(root->key < key){
+        root->right_child = insert(root->right_child, key);
+        root = rebalance(root);
+        return root;
+    }
+    else{
+        exit(1);
+    }
+}
+
+bstnode* Remove(bstnode* root,int key){
+    if(root==NULL) return NULL;
+    if(root->key > key) root->left_child = Remove(root->left_child,key); // Find the element
+    else if (root->key < key) root->right_child = Remove(root->right_child,key);
+    else{
+        bstnode* cur = root;
+        if(root->left_child == NULL && root->right_child == NULL){
+            destroynode(cur);
+            root = NULL;
+        }
+        else if (root->left_child == NULL || root->right_child == NULL){
+            if(root->left_child != NULL){
+                root = root->left_child;
+                destroynode(cur);
+            }
+            else{
+                root = root->right_child;
+                destroynode(cur);
+            }
+        }
+        else{
+            cur = cur->right_child;
+            while(cur->left_child != NULL){
+                cur = cur->left_child;
+            }
+            root->key = cur->key;
+            root->right_child = Remove(root->right_child, cur->key);
+        }
+    }
+    return rebalance(root);
+}
+
+void inorder(bstnode* root){
+    if(root != NULL){
+        inorder(root->left_child);
+        printf("%d ", root->key);
+        inorder(root->right_child);
+    }
+}
