@@ -25,11 +25,10 @@ int main(){
     heap test;
     initheap(&test);
     insert(&test,'a',5);
-    insert(&test,'b',4);
+    insert(&test,'b',6);
     insert(&test,'c',3);
-    insert(&test,'d',2);
-    insert(&test,'e',1);
-    Delete(&test);
+    insert(&test,'d',7);
+    insert(&test,'e',10);
     for(int i = 1;i<=test.num;i++){
     printf("%c ",test.items[i].data);
     }
@@ -72,9 +71,6 @@ void insert(heap* pheap, Data data, int priority){
     hnode newnode;
     int idx = pheap->num + 1;
     if(isfull(pheap)) exit(1);
-    newnode.data = data;
-    newnode.priority = priority;
-    pheap->items[idx] = newnode;
     while(idx>1){
         int parent = getparent(idx);
         if(priority > pheap->items[parent].priority){
@@ -83,6 +79,9 @@ void insert(heap* pheap, Data data, int priority){
         }
         else break;
     }
+    newnode.data = data;
+    newnode.priority = priority;
+    pheap->items[idx] = newnode;
     pheap->num++;
 }
 Data Delete(heap* pheap){
@@ -100,6 +99,8 @@ Data Delete(heap* pheap){
     pheap->num--;
     return max;
 }
+
+
 
 
 
