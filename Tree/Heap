@@ -30,7 +30,9 @@ int main(){
     insert(&test,'d',2);
     insert(&test,'e',1);
     Delete(&test);
-    printf("%c ",test.items[test.num].data);
+    for(int i = 1;i<=test.num;i++){
+    printf("%c ",test.items[i].data);
+    }
 }
 
 void initheap(heap* pheap){
@@ -98,5 +100,7 @@ Data Delete(heap* pheap){
     pheap->num--;
     return max;
 }
+
+
 
 
