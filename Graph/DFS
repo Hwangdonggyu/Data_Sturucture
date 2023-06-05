@@ -1,0 +1,172 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#define MAX_STACK 100
+
+// -- stack
+typedef int data;
+typedef struct {
+    data items[MAX_STACK];
+    int top;
+
+}stack;
+
+void initstack(stack* pstack);
+bool isfull(stack* pstack);
+bool isempty(stack* pstack);
+data peek(stack* pstack);
+void push(stack* pstack, data item);
+void pop(stack* pstack);
+// -- graph
+typedef struct _gnode{
+    int id;
+    struct _gnode* next;
+}gnode;
+
+typedef struct{
+    int num;
+    gnode** heads;
+}graph;
+void creategraph(graph* pgraph, int num);
+void destroygraph(graph* pgraph);
+void addedge(graph* pgraph, int src, int dest);
+void printgraph(graph* pgraph);
+void DFS(graph* pgraph);
+
+int main(){
+    graph g;
+    creategraph(&g, 8);
+    addedge(&g, 0, 7);
+    addedge(&g, 0, 2);
+    addedge(&g, 0, 1);
+    addedge(&g, 1, 7);
+    addedge(&g, 1, 5);
+    addedge(&g, 1, 3);
+    addedge(&g, 2, 6);
+    addedge(&g, 2, 5);
+    addedge(&g, 3, 7);
+    addedge(&g, 3, 4);
+    addedge(&g, 4, 7);
+    addedge(&g, 6, 7);
+    addedge(&g, 5, 7);
+
+    
+
+    DFS(&g);
+    printf("\n");
+    printgraph(&g);
+    destroygraph(&g);
+
+    return 0;
+}
+void initstack(stack* pstack) {
+    pstack->top = -1;
+}
+bool isfull(stack* pstack) {
+    return pstack->top == MAX_STACK - 1;
+}
+bool isempty(stack* pstack) {
+    return pstack->top == -1;
+}
+data peek(stack* pstack) {
+    if (isempty(pstack)) {
+        exit(1);
+    }
+    return pstack->items[pstack->top];
+}
+void push(stack* pstack, data item) {
+    if (isfull(pstack)) {
+        exit(1);
+    }
+    pstack->items[++(pstack->top)] = item;
+}
+void pop(stack* pstack) {
+    if (isempty(pstack)) {
+        exit(1);
+    }
+    --(pstack->top);
+}
+
+void creategraph(graph* pgraph, int num){
+    pgraph->num = num;
+    pgraph->heads = (gnode**)malloc(sizeof(gnode*)*num);
+    for(int i = 0; i < num; i ++){
+        pgraph->heads[i] = (gnode*)malloc(sizeof(gnode));
+        pgraph->heads[i]->next = NULL;
+    }
+}
+void destroygraph(graph* pgraph){
+    for(int i = 0; i < pgraph->num; i++){
+        gnode* cur = pgraph->heads[i];
+        while(cur != NULL){
+            gnode* temp = cur;
+            cur = cur->next;
+            free(temp);
+        }
+    }
+    free(pgraph->heads);
+}
+
+void addedge(graph* pgraph, int src, int dest){
+    gnode* newnode1, *newnode2, *cur;
+    newnode1 = (gnode*)malloc(sizeof(gnode));
+    newnode1->id = dest;
+    newnode1->next = NULL;
+
+    cur = pgraph->heads[src];
+    while(cur -> next != NULL){
+        cur = cur->next;
+    }
+    cur->next = newnode1;
+
+    newnode2 = (gnode*)malloc(sizeof(gnode));
+    newnode2->id = src;
+    newnode2->next = NULL;
+
+    cur = pgraph->heads[dest];
+    while(cur->next != NULL){
+        cur = cur->next;
+    }
+    cur->next = newnode2;
+}
+
+void printgraph(graph* pgraph){
+    for(int i = 0; i < pgraph->num; i++){
+        gnode* cur = pgraph->heads[i]->next;
+        printf("Node %d: ", i);
+        while(cur != NULL){
+            printf("%d ", cur->id);
+            cur = cur->next;
+        }
+        printf("\n");
+    }
+}
+
+void DFS(graph* pgraph){
+    stack pstack;
+    bool* visited = (bool*)malloc(sizeof(bool)*pgraph->num);
+    for(int i = 0; i<pgraph->num;i++){
+        visited[i] = false;
+    }
+    initstack(&pstack);
+    push(&pstack, 0);
+    while(!isempty(&pstack)){
+        gnode* cur;
+        int vtx = peek(&pstack);
+        pop(&pstack);
+        
+        if(visited[vtx]) continue;
+        else{
+            visited[vtx] = true;
+            printf("%d ",vtx);
+        }
+        
+        cur = pgraph->heads[vtx]->next;
+        while(cur != NULL){
+            if(!visited[cur->id]){
+                push(&pstack,cur->id);
+            }
+            cur = cur->next;
+        }
+    }
+}
