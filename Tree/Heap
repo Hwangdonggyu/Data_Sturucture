@@ -29,6 +29,7 @@ int main(){
     insert(&test,'c',3);
     insert(&test,'d',7);
     insert(&test,'e',10);
+    delete(&test)
     for(int i = 1;i<=test.num;i++){
     printf("%c ",test.items[i].data);
     }
